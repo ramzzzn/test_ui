@@ -2,6 +2,7 @@ package ru.stepup.testui;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -25,6 +26,7 @@ public class PobedaTests {
     WebDriver driver;
 
     @Test
+    @DisplayName("Поиск и открытие сайта авиакомпании 'Победа' и проверка смены языка на сайте")
     public void testSearchAndOpenPobedaPage() {
         searchForPobedaSite();
         openPobedaSite();
