@@ -67,7 +67,7 @@ public class PobedaTests {
         WebElement kaliningradPicture = driver.findElement(By.cssSelector("img[srcset*=KALINIGRAD]"));
         waitForElementIsVisible(kaliningradPicture);
         waitForElementIsVisible(kaliningradText);
-        assertThat(kaliningradText.getText(), equalTo("Полетели в Калининград!"));
+        assertThat(kaliningradText.getText(), equalTo(EXAMPLE_TEXT));
     }
 
     private void explicitWaitTextOfElement(WebDriverWait wait, By locator, String text) {
