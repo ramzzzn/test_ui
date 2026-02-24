@@ -13,18 +13,28 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
+import static org.awaitility.Awaitility.with;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.awaitility.Awaitility.with;
 
 public class PobedaTests {
     private final static String DUCKGO_URL = "https://duckduckgo.com/";
+    private final static String EXAMPLE_TEXT = "Полетели в Калининград!";
+
     WebDriver driver;
+
+    @Test
+    public void testSearchAndOpenPobedaPage() {
+        searchForPobedaSite();
+        openPobedaSite();
+        customWaitForElementsKaliningrad();
+        changeLanguage();
+        checkElementsAfterChangeLanguage();
+    }
 
     @BeforeEach
     public void openGooglePage() {
-        System.setProperty("webdriver.chrome.driver", "C:\\projects\\chromedriver\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(60));
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
@@ -44,11 +54,16 @@ public class PobedaTests {
     }
 
     private static void waitForElementIsVisible(WebElement element) {
-        with().pollDelay(Duration.ofSeconds(1)).await().atMost(Duration.ofSeconds(100)).until(element::isDisplayed);
+        with()
+                .pollDelay(Duration.ofSeconds(1))
+                .await()
+                .atMost(Duration.ofSeconds(100))
+                .until(element::isDisplayed);
     }
 
     private void customWaitForElementsKaliningrad() {
-        WebElement kaliningradText = driver.findElement(By.xpath("//div[contains(text(), 'Полетели в Калининград')]"));
+        WebElement kaliningradText = driver.
+                findElement(By.xpath("//div[contains(text(), '" + EXAMPLE_TEXT + "')]"));
         WebElement kaliningradPicture = driver.findElement(By.cssSelector("img[srcset*=KALINIGRAD]"));
         waitForElementIsVisible(kaliningradPicture);
         waitForElementIsVisible(kaliningradText);
@@ -59,15 +74,16 @@ public class PobedaTests {
         wait.until(ExpectedConditions.textToBePresentInElementLocated(locator, text));
     }
 
-    private void changeLanguage(){
+    private void changeLanguage() {
         driver.findElement(By.cssSelector("button[aria-label='Меню']")).click();
         driver.findElement(By.xpath("//div[@tabindex]//button[contains(text(), 'РУС')]")).click();
         driver.findElement(By.xpath("//div[contains(text(), 'English')]")).click();
     }
 
-    private void checkElementsAfterChangeLanguage(){
+    private void checkElementsAfterChangeLanguage() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        explicitWaitTextOfElement(wait, By.xpath("//span[contains(text(), 'Ticket search')][2]"), "Ticket search");
+        explicitWaitTextOfElement(wait, By.xpath("//span[contains(text(), 'Ticket search')][2]"),
+                "Ticket search");
         explicitWaitTextOfElement(wait, By.xpath("//span[contains(text(), 'Online check-in')][2]"), "Online check-in");
         explicitWaitTextOfElement(wait, By.xpath("//span[contains(text(), 'Manage my booking')][2]"), "Manage my booking");
     }
@@ -75,14 +91,5 @@ public class PobedaTests {
     @AfterEach
     public void quitDriver() {
         driver.quit();
-    }
-
-    @Test
-    public void testSearchAndOpenPobedaPage() {
-        searchForPobedaSite();
-        openPobedaSite();
-        customWaitForElementsKaliningrad();
-        changeLanguage();
-        checkElementsAfterChangeLanguage();
     }
 }
