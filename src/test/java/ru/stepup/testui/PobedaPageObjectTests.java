@@ -38,6 +38,34 @@ public class PobedaPageObjectTests {
                 pobedaStartPage.isAboutCompanyHeaderVisible(), equalTo(true));
     }
 
+    @Test
+    @DisplayName("Открытие сайта авиакомпании 'Победа' и проверка блока поиска билетов")
+    public void testOpenPageAndCheckSearchTickets() {
+        PobedaStartPage pobedaStartPage = new PobedaStartPage(driver);
+
+        assertThat("Заголовок не совпадает", pobedaStartPage.getTitleText(),
+                equalTo("Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, " +
+                        "прямые и трансферные рейсы с пересадками"));
+        assertThat("На странице не отображается логотип Победы",
+                pobedaStartPage.isLogoDisplayed(), equalTo(true));
+
+        pobedaStartPage.scrollToSearchUnit();
+        assertThat("Не отображается поле выбора города отправления",
+                pobedaStartPage.isDepartureCityInputVisible(), equalTo(true));
+        assertThat("Не отображается поле выбора города назначения",
+                pobedaStartPage.isArrivalCityInputVisible(), equalTo(true));
+        assertThat("Не отображается поле выбора даты отправления",
+                pobedaStartPage.isDepartureDateInputVisible(), equalTo(true));
+        assertThat("Не отображается поле выбора даты обратного рейса",
+                pobedaStartPage.isReturningDateInputVisible(), equalTo(true));
+
+        pobedaStartPage.setDepartureCity("Москва");
+        pobedaStartPage.setArrivalCity("Санкт-Петербург");
+        pobedaStartPage.submitSearchButton();
+        assertThat("Поле 'Туда' не подсвечено красной обводкой",
+                pobedaStartPage.getDepartureDateInputBorderColor(), equalTo("rgb(213, 0, 98)"));
+    }
+
     @BeforeEach
     public void setup() {
         driver = new ChromeDriver();
