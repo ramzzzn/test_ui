@@ -6,6 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import ru.stepup.testui.pages.BookingManagmentPage;
+import ru.stepup.testui.pages.SearchOrderPage;
 import ru.stepup.testui.pages.PobedaStartPage;
 
 import java.time.Duration;
@@ -66,11 +68,50 @@ public class PobedaPageObjectTests {
                 pobedaStartPage.getDepartureDateInputBorderColor(), equalTo("rgb(213, 0, 98)"));
     }
 
+    @Test
+    @DisplayName("Проверка поиска несуществующего бронирования на странице 'Управление бронированием' ")
+    public void testSearchNonExistingBooking() {
+        PobedaStartPage pobedaStartPage = new PobedaStartPage(driver);
+        BookingManagmentPage bookingManagmentPage = new BookingManagmentPage(driver);
+
+        assertThat("Заголовок не совпадает", pobedaStartPage.getTitleText(),
+                equalTo("Авиакомпания «Победа» - купить авиабилеты онлайн, дешёвые билеты на самолёт, " +
+                        "прямые и трансферные рейсы с пересадками"));
+        assertThat("На странице не отображается логотип Победы",
+                pobedaStartPage.isLogoDisplayed(), equalTo(true));
+
+        // Переходим на первую страницу "Управление бронирования" - не учтено в задании
+        pobedaStartPage.openManageBookingFirstPage();
+        assertThat("На первой странице 'Управление бронированием' не отображается поле 'Номер бронирования или билета'",
+                bookingManagmentPage.isOrderNumberInputVisible(), equalTo(true));
+        assertThat("На первой странице 'Управление бронированием' не отображается поле 'Фамилия клиента'",
+                bookingManagmentPage.isClientLastNameInputVisible(), equalTo(true));
+        assertThat("На первой странице 'Управление бронированием' не отображается кнопка 'Поиск'",
+                bookingManagmentPage.isSearchButtonVisible(), equalTo(true));
+
+        // После нажатия на кнопку "Поиск" переходим на страницу поиска брони
+        SearchOrderPage searchOrderPage = bookingManagmentPage
+                .searchBooking("XXXXXX", "Qwerty");
+        assertThat("На второй странице 'Управление бронированием' не отображается поле 'Номер брони или билета'",
+                searchOrderPage.isOrderNumberInputVisible(), equalTo(true));
+        assertThat("На второй странице 'Управление бронированием' не отображается поле 'Фамилия'",
+                searchOrderPage.isClientLastNameInputVisible(), equalTo(true));
+        assertThat("На второй странице 'Управление бронированием' не отображается кнопка 'Найти заказ'",
+                searchOrderPage.isSearchButtonVisible(), equalTo(true));
+
+        searchOrderPage.submitSearchBooking();
+        assertThat("На странице 'Управление бронированием' не отображается сообщение об ошибке поиска",
+                searchOrderPage.isErrorMessageVisible(), equalTo(true));
+        assertThat("Текст сообщения об ошибке поиска некорректен",
+                searchOrderPage.getErrorMessageText(),
+                equalTo("Заказ с указанными параметрами не найден"));
+    }
+
     @BeforeEach
     public void setup() {
         driver = new ChromeDriver();
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(20));
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(50));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
         driver.manage().window().maximize();
         driver.get(BASE_URL);
     }

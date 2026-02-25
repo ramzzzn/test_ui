@@ -49,6 +49,9 @@ public class PobedaStartPage {
     @FindBy(xpath = "//button[.//text()='Поиск']")
     WebElement searchButton;
 
+    @FindBy(xpath = "//div[not(@class)]/a[contains(text(), 'Управление бронированием')]")
+    WebElement manageBookingLink;
+
     public PobedaStartPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
@@ -107,6 +110,12 @@ public class PobedaStartPage {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.attributeContains(parentElement, "border-color", "rgb(213, 0, 98)"));
         return parentElement.getCssValue("border-color");
+    }
+
+    public void openManageBookingFirstPage() {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView(true);", manageBookingLink);
+        manageBookingLink.click();
     }
 
     public boolean isPrepareForFlightHeaderVisible() {
