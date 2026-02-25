@@ -8,6 +8,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class PobedaStartPage {
     WebDriver driver;
@@ -99,6 +103,9 @@ public class PobedaStartPage {
 
     public String getDepartureDateInputBorderColor() {
         WebElement parentElement = departureDateInput.findElement(By.xpath(".."));
+        // Ожидаем, пока элемент подсветится красным
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.attributeContains(parentElement, "border-color", "rgb(213, 0, 98)"));
         return parentElement.getCssValue("border-color");
     }
 
